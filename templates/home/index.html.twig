@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste Dynamique{% endblock %}
+
+{% block body %}
+
+    <br><br>
+    <div class="row">
+        <div class="col-6 mx-auto">
+            <h1 class="text-center" >Liste Dynamique</h1>
+
+            {% for message in app.flashes('message') %}
+                <div class="alert alert-success" role="alert">
+                    {{message}}
+                </div>
+		    {% endfor %}
+
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {#  #}
+            <button type="submit" class="btn btn-primary w-100" formnovalidate>Valider</button>
+            {{ form_end(form) }}
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        window.onload = () => 
+        {
+            // On va chercher le pays
+            let country = document.querySelector("#lisitra_country");
+            country.addEventListener("change", function()
+            {
+                let form = this.closest("form");
+                let data = this.name + "=" + this.value;
+                
+                fetch(form.action, 
+                {
+                    method: form.getAttribute("method"),
+                    body: data,
+                    headers: 
+                    {
+                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => 
+                {
+                    let content = document.createElement("html");
+                    content.innerHTML = html;
+                    let nouveauSelect = content.querySelector("#lisitra_city");
+                    document.querySelector("#lisitra_city").replaceWith(nouveauSelect);
+                })
+                .catch(error => 
+                {
+                    console.log(error);
+                })
+            });
+        }
+    </script>
+{% endblock %}
